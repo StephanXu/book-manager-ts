@@ -19,10 +19,14 @@ export class Book extends BaseEntity {
     @Column()
     title: string;
 
-    @OneToMany(type => BorrowRecord, borrowRecord => borrowRecord.book)
+    @OneToMany(type => BorrowRecord, borrowRecord => borrowRecord.book, {
+        cascade: true
+    })
     borrowRecord: BorrowRecord[];
 
-    @ManyToMany(type => Author, author => author.book)
+    @ManyToMany(type => Author, author => author.book, {
+        cascade: true
+    })
     author: Author[];
 
     @ManyToOne(type => Library, library => library.book)

@@ -18,5 +18,5 @@ export class Author extends BaseEntity {
 
     @ManyToMany(type => Book, book => book.author)
     @JoinTable()
-    book: Book[]
+    book: Book[];
 }

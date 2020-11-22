@@ -1,7 +1,8 @@
 import express from 'express'
 import { createConnection } from 'typeorm';
 import bodyParser from 'body-parser';
-import books from './src/controller/books';
+import author from './src/controller/author';
+import library from './src/controller/library';
 
 createConnection().then(connection => {
     // Our Express APP config
@@ -10,7 +11,8 @@ createConnection().then(connection => {
     app.set("port", process.env.PORT || 3000);
     app.use(bodyParser.json())
 
-    app.use('/book', books);
+    app.use('/library', library);
+    app.use('/author', author)
 
     const server = app.listen(app.get("port"))
 

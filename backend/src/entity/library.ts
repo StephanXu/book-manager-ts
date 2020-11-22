@@ -18,6 +18,8 @@ export class Library extends BaseEntity {
     @Column()
     position: string;
 
-    @OneToMany(type => Book, book => book.library)
+    @OneToMany(type => Book, book => book.library, {
+        cascade: true
+    })
     book: Book[];
 }

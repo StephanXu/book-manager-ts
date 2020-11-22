@@ -33,6 +33,8 @@ export class User extends BaseEntity {
     @Column()
     telephone: string;
 
-    @OneToMany(type => BorrowRecord, borrowRecord => borrowRecord.reader)
+    @OneToMany(type => BorrowRecord, borrowRecord => borrowRecord.reader, {
+        cascade: true
+    })
     borrowRecord: BorrowRecord[];
 }

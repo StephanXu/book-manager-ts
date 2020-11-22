@@ -4,9 +4,7 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "watch-ts": "tsc -w",
-    "watch-node": "nodemon dist/app.js",
-    "watch": "concurrently -k -p \"[{name}]\" -n \"TypeScript, Node\" -c \"yello.bold, cyan.bold\" \"npm run watch-ts\" \"npm run watch-node\"",
+    "watch": "nodemon --ext \"ts,json\" --exec \"./node_modules/.bin/ts-node ./app.ts\"",
     "typeorm": "node --require ts-node/register ./node_modules/typeorm/cli.js"
   },
   "keywords": [],
