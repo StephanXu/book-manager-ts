@@ -5,6 +5,7 @@ import {
     OneToMany,
     PrimaryGeneratedColumn
 } from "typeorm";
+import { Book } from "./books";
 import { BorrowRecord } from "./borrowRecord";
 
 @Entity()
@@ -37,4 +38,9 @@ export class User extends BaseEntity {
         cascade: true
     })
     borrowRecord: BorrowRecord[];
+
+    @OneToMany(type => Book, book => book.reader, {
+        cascade: true
+    })
+    book: Book[];
 }

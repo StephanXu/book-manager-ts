@@ -6,10 +6,12 @@ import {
     OneToMany,
     ManyToOne,
     ManyToMany,
+    OneToOne,
 } from 'typeorm'
 import { Author } from './author';
 import { BorrowRecord } from './borrowRecord';
 import { Library } from './library';
+import { User } from './user';
 
 @Entity()
 export class Book extends BaseEntity {
@@ -23,6 +25,9 @@ export class Book extends BaseEntity {
         cascade: true
     })
     borrowRecord: BorrowRecord[];
+
+    @ManyToOne(type => User, user => user.book)
+    reader: User | null;
 
     @ManyToMany(type => Author, author => author.book, {
         cascade: true
