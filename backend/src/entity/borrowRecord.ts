@@ -20,5 +20,8 @@ export class BorrowRecord extends BaseEntity {
     reader: User;
 
     @Column()
+    direction: Boolean; // true for borrow
+
+    @Column()
     time: Date;
 }

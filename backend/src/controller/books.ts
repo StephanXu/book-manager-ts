@@ -1,10 +1,9 @@
 import { Router, Request, Response } from 'express'
-import { read } from 'fs';
-import { Author } from '../entity/author';
+import { getManager } from 'typeorm';
 import { Book } from '../entity/books';
 import { BorrowRecord } from '../entity/borrowRecord';
-import { Library } from '../entity/library';
 import { User } from '../entity/user';
+import { IUserRequest } from '../types/request';
 const router = Router({ mergeParams: true })
 
 class BookReq {
@@ -13,82 +12,95 @@ class BookReq {
     library: string;
 };
 
-router.route('/')
-    .get(async (request: Request, response: Response) => {
-        let libraryId = request.params.library
-        let library = await Library.findOne({
-            where: { id: libraryId },
-            relations: ['book']
-        })
-        if (!library) {
-            response.status(404).send({ msg: 'Library not found' })
-            return;
-        }
-        response.json(library?.book);
-    })
-    .post(async (request: Request, response: Response) => {
-        let bookReq: BookReq = request.body;
-        let libraryId = request.params.library
-        let library = await Library.findOne({ where: { id: libraryId } })
+async function getBook(req: Request, res: Response) {
+    let book = await Book.findOne({ where: { id: req.params.bookId } });
+    if (!book) {
+        res.status(404).json({ msg: "book dose not exist" });
+    }
+    await book?.remove();
+}
 
-        if (!library) {
-            response.status(400).send({ msg: 'Library not found' })
-            return;
-        }
-
-        let newBook = new Book;
-        newBook.title = bookReq.title;
-        newBook.library = library;
-        newBook.reader = null;
-        let authorList: Author[] = [];
-
-        bookReq.author.forEach(async item => {
-            let author = await Author.findOne({ where: { name: item }, relations: ['book'] })
-            if (!author) {
-                author = new Author;
-                author.name = item;
-            }
-            authorList.push(author);
-        });
-        newBook.author = authorList;
-
-        await newBook.save();
-        response.status(200).send();
+async function borrowBook(req: Request, res: Response) {
+    let book = await Book.findOne({
+        where: { id: req.params.bookId },
+        relations: ['reader']
     });
+    if (!book) {
+        res.status(404).json({ msg: "book dose not exist" });
+        return;
+    }
+    if (book.reader != null) {
+        res.status(400).json({ msg: "book dose not available" })
+        return;
+    }
+    let user = await User.findOne({ where: { id: req.params.userId } });
+    if (!user) {
+        res.status(404).json({ msg: "user dose not exist" });
+        return;
+    }
+    book.reader = user;
+    let record = new BorrowRecord;
+    record.book = book;
+    record.reader = user;
+    record.time = new Date(Date.now());
+    record.direction = true;
+    await getManager().transaction(async transactionalEntityManager => {
+        await transactionalEntityManager.save(record);
+        await transactionalEntityManager.save(book);
+    });
+}
+
+async function returnBook(req: IUserRequest, res: Response) {
+    let book = await Book.findOne({
+        where: { id: req.params.bookId },
+        relations: ['reader']
+    });
+    if (!book) {
+        res.status(404).json({ msg: "book dose not exist" });
+        return;
+    }
+    if (book.reader == null) {
+        res.status(400).json({ msg: "failed" })
+        return;
+    }
+    let user = await User.findOne({ where: { id: req.params.userId } });
+    if (!user) {
+        res.status(404).json({ msg: "user dose not exist" });
+        return;
+    }
+    book.reader = null;
+    let record = new BorrowRecord;
+    record.book = book;
+    record.reader = user;
+    record.time = new Date(Date.now());
+    record.direction = false;
+    await getManager().transaction(async transactionalEntityManager => {
+        await transactionalEntityManager.save(record);
+        await transactionalEntityManager.save(book);
+    });
+    res.status(200).send();
+}
+
+async function listBorrowRecord(req: IUserRequest, res: Response) {
+    let book = await Book.findOne({
+        where: { id: req.params.bookId },
+        relations: ['borrowRecord']
+    });
+    if (!book) {
+        res.status(404).json({ msg: "book dose not exist" });
+        return;
+    }
+    res.status(200).json(book.borrowRecord);
+}
 
 router.route('/:bookId')
-    .delete(async (req: Request, res: Response) => {
-        let book = await Book.findOne({ where: { id: req.params.bookId } });
-        if (!book) {
-            res.status(404).json({ msg: "book dose not exist" });
-        }
-        await book?.remove();
-    });
+    .delete(getBook);
 
 router.route('/:bookId/reader/:userId')
-    .post(async (req: Request, res: Response) => {
-        let book = await Book.findOne({
-            where: { id: req.params.bookId },
-            relations: ['reader']
-        });
-        if (!book) {
-            res.status(404).json({ msg: "book dose not exist" });
-            return;
-        }
-        if (book.reader != null) {
-            res.status(400).json({ msg: "book dose not available" })
-            return;
-        }
-        let user = await User.findOne({ where: { id: req.params.userId } });
-        if (!user) {
-            res.status(404).json({ msg: "user dose not exist" });
-            return;
-        }
-        let record = new BorrowRecord;
-        record.book = book;
-        record.reader = user;
-        record.time = new Date(Date.now());
-        record.save();
-    })
+    .post(borrowBook)
+    .delete(returnBook)
+
+router.route('/:bookId/record')
+    .post(listBorrowRecord);
 
 export default router;

@@ -34,6 +34,9 @@ export class Book extends BaseEntity {
     })
     author: Author[];
 
+    @Column()
+    cover: string;
+
     @ManyToOne(type => Library, library => library.book)
     library: Library;
 }
