@@ -1,6 +1,6 @@
 import store from '@/store'
-import { getModule, Module, Mutation, VuexModule } from 'vuex-module-decorators'
-
+import { getModule, Module, MutationAction, VuexModule } from 'vuex-module-decorators'
+import { Library, listLibrary } from '@/api/library'
 @Module({
     namespaced: true,
     name: 'library',
@@ -8,14 +8,14 @@ import { getModule, Module, Mutation, VuexModule } from 'vuex-module-decorators'
     store
 })
 class LibraryStore extends VuexModule {
-    clientWidth = 0;
-    clientHeight = 0;
+    library: Library[] = [];
 
-    @Mutation
-    SET_CLIENT_WIDTH(val: number) { this.clientWidth = val }
-
-    @Mutation
-    SET_CLIENT_HEIGHT(val: number) { this.clientHeight = val }
+    @MutationAction({ mutate: ['library'] })
+    async fetchLibraryList() {
+        return {
+            library: await listLibrary()
+        };
+    }
 }
 
 export default getModule(LibraryStore);

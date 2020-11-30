@@ -1,6 +1,6 @@
 import request from '@/utils/request'
 
-interface Library {
+export interface Library {
     id: number;
     name: string;
     position: string;
@@ -12,14 +12,26 @@ export function listLibrary() {
         method: 'get'
     }).then(res => res.data);
 }
+export function addLibrary(libraryInfo: { name: string; position: string }) {
+    return request.request<Library>({
+        url: '/library',
+        method: 'post',
+        data: libraryInfo
+    }).then(res => res.data);
+}
+export function removeLibrary(libraryId: number) {
+    return request({
+        url: `/library/${libraryId}`,
+        method: 'delete'
+    }).then(res => res.data);
+}
 
-
-interface Author {
+export interface Author {
     id: number;
     name: string;
     book: Book[];
 }
-interface Book {
+export interface Book {
     id: number;
     title: string;
     author: Author[];
@@ -33,11 +45,11 @@ export function listBooks(libraryId: number) {
 }
 
 
-interface BorrowRecord {
+export interface BorrowRecord {
     id: number;
     book: Book;
     reader: string;
-    direction: Boolean; // true for borrowi
+    direction: boolean; // true for borrowi
     time: Date;
 }
 export function listBorrowRecord(bookId: number) {

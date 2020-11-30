@@ -3,9 +3,7 @@
     <v-list>
       <v-list-item class="px-2">
         <v-list-item-avatar>
-          <v-img
-            :src="avatar"
-          ></v-img>
+          <v-img :src="avatar"></v-img>
         </v-list-item-avatar>
 
         <v-list-item-title></v-list-item-title>
@@ -24,7 +22,7 @@
     </v-list>
 
     <v-divider></v-divider>
-    <v-list dense nav flat>
+    <v-list nav dense>
       <v-list-item-group v-model="currentView" color="primary">
         <v-list-item
           v-for="item in items"
@@ -65,8 +63,28 @@ export default Vue.extend({
       items: [
         {
           icon: "mdi-view-dashboard",
-          title: "书籍列表",
+          title: "查看馆藏",
           redirect: "/book",
+        },
+        {
+          icon: "mdi-view-dashboard",
+          title: "我借的",
+          redirect: "/",
+        },
+        {
+          icon: "mdi-view-dashboard",
+          title: "个人设置",
+          redirect: "/",
+        },
+        {
+          icon: "mdi-view-dashboard",
+          title: "读者管理",
+          redirect: "/",
+        },
+        {
+          icon: "mdi-view-dashboard",
+          title: "库存管理",
+          redirect: "/inventory",
         },
       ],
     };

@@ -37,6 +37,7 @@ router.route('/:library')
 
         let library = await Library.findOne({ where: { id: id } });
         await library?.remove();
+        res.status(200).send();
     });
 
 router.route('/:library/book')

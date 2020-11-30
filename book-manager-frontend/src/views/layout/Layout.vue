@@ -12,8 +12,18 @@
       />
 
       <v-toolbar-title style="width: 300px" class="ml-0 pl-3">
-        <span class="title">Ossian Board</span>
+        <span class="title">Borok Library</span>
       </v-toolbar-title>
+
+      <v-tabs background-color="transparent">
+          <v-tab
+            v-for="item in items"
+            :key="item.title"
+            link
+            :to="item.redirect"
+            >{{ item.title }}</v-tab
+          >
+        </v-tabs>
 
       <v-spacer></v-spacer>
 
@@ -31,7 +41,7 @@
     <v-footer app outlined>
       <v-row no-gutters>
         <v-col class="text-center" cols="12">
-          {{ new Date().getFullYear() }} — <strong>Borok Manager</strong>
+          {{ new Date().getFullYear() }} — <strong>Borok Library</strong>
         </v-col>
       </v-row>
     </v-footer>
@@ -56,18 +66,28 @@ export default Vue.extend({
     items: [
       {
         icon: "mdi-view-dashboard",
-        title: "Arguments",
-        redirect: "/index",
+        title: "查看馆藏",
+        redirect: "/book",
       },
       {
-        icon: "mdi-chart-areaspline",
-        title: "Online Logger",
-        redirect: "/board",
+        icon: "mdi-view-dashboard",
+        title: "我借的",
+        redirect: "/",
       },
       {
-        icon: "mdi-account",
-        title: "Profile",
-        redirect: "/profile",
+        icon: "mdi-view-dashboard",
+        title: "个人设置",
+        redirect: "/",
+      },
+      {
+        icon: "mdi-view-dashboard",
+        title: "读者管理",
+        redirect: "/",
+      },
+      {
+        icon: "mdi-view-dashboard",
+        title: "库存管理",
+        redirect: "/inventory",
       },
     ],
   }),

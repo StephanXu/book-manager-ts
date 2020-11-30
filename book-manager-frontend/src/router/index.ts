@@ -24,7 +24,6 @@ const routes = [
                 name: 'book',
                 component: () => import('@/views/book/BookList.vue'),
                 meta: {
-                    drawer: () => import('@/views/layout/DefaultNavigator.vue'),
                     title: 'Arguments'
                 }
             },
@@ -36,6 +35,40 @@ const routes = [
                 meta: {
                     drawer: () => import('@/views/layout/DefaultNavigator.vue'),
                     title: 'Arguments'
+                }
+            }]
+    },
+    {
+        path: '/inventory',
+        name: 'inventory',
+        component: Layout,
+        redirect: '/inventory/index',
+        children: [
+            {
+                path: 'index',
+                name: 'inventory',
+                component: () => import('@/views/inventory/Inventory.vue'),
+                meta: {
+                    drawer: () => import('@/views/inventory/Navigator.vue'),
+                    title: '库存概览'
+                }
+            },
+            {
+                path: 'library',
+                name: 'inventory-library',
+                component: () => import('@/views/inventory/Library.vue'),
+                meta: {
+                    drawer: () => import('@/views/inventory/Navigator.vue'),
+                    title: '图书馆管理'
+                }
+            },
+            {
+                path: 'book',
+                name: 'inventory-book',
+                component: () => import('@/views/inventory/Book.vue'),
+                meta: {
+                    drawer: () => import('@/views/inventory/Navigator.vue'),
+                    title: '书籍管理'
                 }
             }]
     },
