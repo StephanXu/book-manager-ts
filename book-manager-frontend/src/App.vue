@@ -5,6 +5,7 @@
 </template>
 <script lang="ts">
 import Vue from "vue";
+import views from "@/store/modules/view";
 export default Vue.extend({
   computed: {
     scrollbarTheme() {
@@ -15,18 +16,11 @@ export default Vue.extend({
     this.$vuetify.theme.dark = false;
   },
   mounted() {
-    this.$store.commit(
-      "view/SET_CLIENT_HEIGHT",
-      document.documentElement.clientHeight
-    );
-    this.$store.commit(
-      "view/SET_CLIENT_WIDTH",
-      document.documentElement.clientWidth
-    );
-    const _commit = this.$store.commit;
+    views.SET_CLIENT_WIDTH(document.documentElement.clientWidth);
+    views.SET_CLIENT_HEIGHT(document.documentElement.clientHeight);
     window.onresize = function temp() {
-      _commit("view/SET_CLIENT_HEIGHT", document.documentElement.clientHeight);
-      _commit("view/SET_CLIENT_WIDTH", document.documentElement.clientWidth);
+      views.SET_CLIENT_HEIGHT(document.documentElement.clientHeight);
+      views.SET_CLIENT_WIDTH(document.documentElement.clientWidth);
     };
   },
 });

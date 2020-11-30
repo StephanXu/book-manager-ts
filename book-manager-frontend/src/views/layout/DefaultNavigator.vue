@@ -4,7 +4,7 @@
       <v-list-item class="px-2">
         <v-list-item-avatar>
           <v-img
-            src="https://i.loli.net/2020/09/23/3mQ6Xy2wqIEn9xW.png"
+            :src="avatar"
           ></v-img>
         </v-list-item-avatar>
 
@@ -57,9 +57,9 @@ import users from "@/store/modules/user";
 export default Vue.extend({
   name: "DefaultNavigator",
   props: {
-    value: Boolean as () => false,
+    value: Boolean as () => boolean,
   },
-  data: () => {
+  data() {
     return {
       currentView: null,
       items: [
@@ -78,11 +78,17 @@ export default Vue.extend({
     alias() {
       return users.alias;
     },
-    get drawer() {
-      return this.value;
+    avatar() {
+      return users.avatar;
     },
-    set drawer(val) {
-      this.$emit("input", val);
+
+    drawer: {
+      get(): boolean {
+        return this.value;
+      },
+      set(val: boolean) {
+        this.$emit("input", val);
+      },
     },
   },
   methods: {

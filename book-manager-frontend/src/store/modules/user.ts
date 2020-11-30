@@ -1,10 +1,11 @@
+import store from '@/store'
 import { setToken, removeToken } from '@/utils/auth'
 import { login, getInfo, logout } from '@/api/user'
 import { getModule, Module, MutationAction, VuexModule } from 'vuex-module-decorators'
-import store from '@/store'
 
 @Module({
     namespaced: true,
+    name: 'user',
     dynamic: true,
     store
 })

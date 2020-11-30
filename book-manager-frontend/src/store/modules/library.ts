@@ -1,8 +1,9 @@
-import { getModule, Module, Mutation, VuexModule } from 'vuex-module-decorators'
 import store from '@/store'
+import { getModule, Module, Mutation, VuexModule } from 'vuex-module-decorators'
 
 @Module({
     namespaced: true,
+    name: 'library',
     dynamic: true,
     store
 })

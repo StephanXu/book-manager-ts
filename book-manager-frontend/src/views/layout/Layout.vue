@@ -31,7 +31,7 @@
     <v-footer app outlined>
       <v-row no-gutters>
         <v-col class="text-center" cols="12">
-          {{ new Date().getFullYear() }} — <strong>Ossian Board</strong>
+          {{ new Date().getFullYear() }} — <strong>Borok Manager</strong>
         </v-col>
       </v-row>
     </v-footer>

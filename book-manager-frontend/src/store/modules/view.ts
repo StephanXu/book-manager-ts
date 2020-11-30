@@ -1,9 +1,11 @@
-import { getModule, Module, Mutation, VuexModule } from 'vuex-module-decorators'
 import store from '@/store'
+import { getModule, Module, Mutation, VuexModule } from 'vuex-module-decorators'
+
 
 @Module({
     namespaced: true,
     dynamic: true,
+    name: 'view',
     store
 })
 class ViewStore extends VuexModule {
