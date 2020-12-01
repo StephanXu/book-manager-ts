@@ -9,7 +9,7 @@
       transition="slide-y-transition"
     >
       <template v-slot:activator="{ on, attrs }">
-        <v-btn color="primary" v-bind="attrs" v-on="on"> 添加图书馆 </v-btn>
+        <v-btn color="primary" v-bind="attrs" v-on="on" depressed> 添加图书馆 </v-btn>
       </template>
       <v-card>
         <v-list>

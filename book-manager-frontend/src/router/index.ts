@@ -22,19 +22,39 @@ const routes = [
             {
                 path: 'index',
                 name: 'book',
-                component: () => import('@/views/book/BookList.vue'),
+                component: () => import('@/views/book/Book.vue'),
                 meta: {
-                    title: 'Arguments'
+                    title: '查看馆藏'
                 }
-            },
+            }]
+    },
+    {
+        path: '/borrow',
+        name: 'borrow',
+        component: Layout,
+        redirect: '/borrow/index',
+        children: [
             {
-                path: ':argId',
-                name: 'singleArgument',
-                component: () => import('@/views/book/BookList.vue'),
-                props: true,
+                path: 'index',
+                name: 'borrow',
+                component: () => import('@/views/book/Borrow.vue'),
                 meta: {
-                    drawer: () => import('@/views/layout/DefaultNavigator.vue'),
-                    title: 'Arguments'
+                    title: '我借的'
+                }
+            }]
+    },
+    {
+        path: '/library',
+        name: 'library',
+        component: Layout,
+        redirect: '/library/index',
+        children: [
+            {
+                path: 'index',
+                name: 'library',
+                component: () => import('@/views/inventory/Library.vue'),
+                meta: {
+                    title: '图书馆'
                 }
             }]
     },

@@ -33,7 +33,7 @@ export function getInfo() {
 
 export function logout() {
     return request({
-        url: '/auth/sign-out',
+        url: '/user/sign-out',
         method: 'post'
     }).then(res => res.data);
 }

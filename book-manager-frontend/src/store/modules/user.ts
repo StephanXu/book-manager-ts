@@ -1,6 +1,6 @@
 import store from '@/store'
 import { setToken, removeToken } from '@/utils/auth'
-import { login, getInfo, logout } from '@/api/user'
+import { login, getInfo } from '@/api/user'
 import { getModule, Module, MutationAction, VuexModule } from 'vuex-module-decorators'
 
 @Module({
@@ -10,7 +10,7 @@ import { getModule, Module, MutationAction, VuexModule } from 'vuex-module-decor
     store
 })
 class UserStore extends VuexModule {
-
+    id = 0;
     token = '';
     name = '';
     alias = '';
@@ -29,7 +29,7 @@ class UserStore extends VuexModule {
         return response
     }
 
-    @MutationAction({ mutate: ['roles', 'name', 'alias', 'avatar', 'birthday', 'telephone'] })
+    @MutationAction({ mutate: ['roles', 'name', 'alias', 'avatar', 'birthday', 'telephone', 'id'] })
     async getInfo() {
         try {
             const info = await getInfo();
@@ -45,7 +45,8 @@ class UserStore extends VuexModule {
                 roles: info.roles,
                 avatar: info.avatar,
                 birthday: info.birthday,
-                telephone: info.telephone
+                telephone: info.telephone,
+                id: info.id
             };
         }
         catch (err) {
@@ -57,14 +58,14 @@ class UserStore extends VuexModule {
                 roles: [],
                 avatar: '',
                 birthday: new Date,
-                telephone: ''
+                telephone: '',
+                id: 0
             }
         }
     }
 
     @MutationAction({ mutate: ['token', 'name', 'roles'] })
     async logout() {
-        await logout()
         removeToken()
         return {
             name: '',

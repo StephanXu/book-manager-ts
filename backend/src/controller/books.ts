@@ -12,7 +12,7 @@ class BookReq {
     library: string;
 };
 
-async function getBook(req: Request, res: Response) {
+async function removeBook(req: Request, res: Response) {
     let book = await Book.findOne({ where: { id: req.params.bookId } });
     if (!book) {
         res.status(404).json({ msg: "book dose not exist" });
@@ -48,6 +48,7 @@ async function borrowBook(req: Request, res: Response) {
         await transactionalEntityManager.save(record);
         await transactionalEntityManager.save(book);
     });
+    res.status(200).send();
 }
 
 async function returnBook(req: IUserRequest, res: Response) {
@@ -94,7 +95,7 @@ async function listBorrowRecord(req: IUserRequest, res: Response) {
 }
 
 router.route('/:bookId')
-    .delete(getBook);
+    .delete(removeBook);
 
 router.route('/:bookId/reader/:userId')
     .post(borrowBook)

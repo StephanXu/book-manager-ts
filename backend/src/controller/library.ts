@@ -1,4 +1,5 @@
 import { Router, Request, Response } from 'express'
+import { getManager } from 'typeorm';
 import { Author } from '../entity/author';
 import { Book } from '../entity/books';
 import { Library } from '../entity/library'
@@ -13,7 +14,8 @@ interface AddLibraryRequest {
 interface BookReq {
     title: string;
     author: string[];
-    library: string;
+    library: number;
+    cover: string;
 };
 
 router.route('/')
@@ -46,12 +48,16 @@ router.route('/:library/book')
         let library = await Library.findOne({
             where: { id: libraryId },
             relations: ['book']
-        })
+        });
         if (!library) {
             response.status(404).send({ msg: 'Library not found' })
             return;
         }
-        response.json(library?.book);
+        let books = await Book.find({
+            where: { library: library },
+            relations: ['author', 'reader']
+        });
+        response.json(books);
     })
     .post(async (request: Request, response: Response) => {
         let bookReq: BookReq = request.body;
@@ -67,6 +73,7 @@ router.route('/:library/book')
         newBook.title = bookReq.title;
         newBook.library = library;
         newBook.reader = null;
+        newBook.cover = bookReq.cover;
         let authorList: Author[] = [];
 
         bookReq.author.forEach(async item => {
@@ -78,7 +85,12 @@ router.route('/:library/book')
             authorList.push(author);
         });
         newBook.author = authorList;
-
+        await getManager().transaction(async transactionalEntityManager => {
+            authorList.forEach(async (item) => {
+                await transactionalEntityManager.save(item);
+            });
+            await transactionalEntityManager.save(newBook);
+        });
         await newBook.save();
         response.status(200).send();
     });

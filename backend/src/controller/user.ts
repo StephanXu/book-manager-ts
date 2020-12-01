@@ -3,7 +3,7 @@ import { User } from '../entity/user';
 import { IUserRequest } from '../types/request'
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcrypt'
-import { Binary } from 'typeorm';
+import { Book } from '../entity/books';
 
 const saltRounds = 10;
 const router = Router();
@@ -92,5 +92,22 @@ router.route('/profile')
         }
         res.json(profile)
     })
+
+router.route('/book')
+    .get(async (req: IUserRequest, res: Response) => {
+        let user = await User.findOne({
+            where: { id: req.user?.uid },
+            relations: ['book']
+        });
+        if (!user) {
+            res.status(404).json({ msg: 'User dose not found' });
+            return;
+        }
+        let books = await Book.find({
+            where: { reader: user },
+            relations: ['author', 'library']
+        });
+        res.status(200).json(books);
+    });
 
 export default router;

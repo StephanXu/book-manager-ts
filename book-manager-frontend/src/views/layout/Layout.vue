@@ -16,20 +16,23 @@
       </v-toolbar-title>
 
       <v-tabs background-color="transparent">
-          <v-tab
-            v-for="item in items"
-            :key="item.title"
-            link
-            :to="item.redirect"
-            >{{ item.title }}</v-tab
-          >
-        </v-tabs>
+        <v-tab
+          v-for="item in items"
+          :key="item.title"
+          link
+          :to="item.redirect"
+          >{{ item.title }}</v-tab
+        >
+      </v-tabs>
 
       <v-spacer></v-spacer>
 
       <v-btn icon>
         <v-icon @click="switchTheme">mdi-theme-light-dark</v-icon>
       </v-btn>
+      <div class="pa-2">
+        <v-btn depressed block @click="logout">Logout</v-btn>
+      </div>
     </v-app-bar>
 
     <v-main>
@@ -52,6 +55,7 @@
 import Vue from "vue";
 import { mapGetters } from "vuex";
 import DefaultNavigator from "./DefaultNavigator.vue";
+import users from "@/store/modules/user";
 
 export default Vue.extend({
   components: {
@@ -72,23 +76,28 @@ export default Vue.extend({
       {
         icon: "mdi-view-dashboard",
         title: "我借的",
-        redirect: "/",
+        redirect: "/borrow",
       },
       {
         icon: "mdi-view-dashboard",
-        title: "个人设置",
-        redirect: "/",
+        title: "图书馆",
+        redirect: "/library",
       },
-      {
-        icon: "mdi-view-dashboard",
-        title: "读者管理",
-        redirect: "/",
-      },
-      {
-        icon: "mdi-view-dashboard",
-        title: "库存管理",
-        redirect: "/inventory",
-      },
+      // {
+      //   icon: "mdi-view-dashboard",
+      //   title: "个人设置",
+      //   redirect: "/",
+      // },
+      // {
+      //   icon: "mdi-view-dashboard",
+      //   title: "读者管理",
+      //   redirect: "/",
+      // },
+      // {
+      //   icon: "mdi-view-dashboard",
+      //   title: "库存管理",
+      //   redirect: "/inventory",
+      // },
     ],
   }),
   computed: {
@@ -106,6 +115,10 @@ export default Vue.extend({
   methods: {
     switchTheme() {
       this.$vuetify.theme.dark = !this.$vuetify.theme.dark;
+    },
+    async logout() {
+      await users.logout();
+      this.$router.push({ path: "/login" });
     },
   },
 });
