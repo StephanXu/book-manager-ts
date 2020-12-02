@@ -17,7 +17,7 @@
 
       <v-tabs background-color="transparent">
         <v-tab
-          v-for="item in items"
+          v-for="item in navigateItems"
           :key="item.title"
           link
           :to="item.redirect"
@@ -27,12 +27,15 @@
 
       <v-spacer></v-spacer>
 
-      <v-btn icon>
-        <v-icon @click="switchTheme">mdi-theme-light-dark</v-icon>
+      <v-btn icon @click="switchTheme">
+        <v-icon>mdi-theme-light-dark</v-icon>
       </v-btn>
-      <div class="pa-2">
-        <v-btn depressed block @click="logout">Logout</v-btn>
-      </div>
+      <v-btn icon @click="logout">
+        <v-icon>mdi-logout</v-icon>
+      </v-btn>
+      <v-avatar size="36px" style="margin-left: 10px">
+        <img :src="avatar" />
+      </v-avatar>
     </v-app-bar>
 
     <v-main>
@@ -72,32 +75,32 @@ export default Vue.extend({
         icon: "mdi-view-dashboard",
         title: "查看馆藏",
         redirect: "/book",
+        needAdmin: false,
       },
       {
         icon: "mdi-view-dashboard",
         title: "我借的",
         redirect: "/borrow",
+        needAdmin: false,
       },
       {
         icon: "mdi-view-dashboard",
-        title: "图书馆",
+        title: "图书馆管理",
         redirect: "/library",
+        needAdmin: true,
       },
-      // {
-      //   icon: "mdi-view-dashboard",
-      //   title: "个人设置",
-      //   redirect: "/",
-      // },
-      // {
-      //   icon: "mdi-view-dashboard",
-      //   title: "读者管理",
-      //   redirect: "/",
-      // },
-      // {
-      //   icon: "mdi-view-dashboard",
-      //   title: "库存管理",
-      //   redirect: "/inventory",
-      // },
+      {
+        icon: "mdi-view-dashboard",
+        title: "用户管理",
+        redirect: "/reader",
+        needAdmin: true,
+      },
+      {
+        icon: "mdi-view-dashboard",
+        title: "书库管理",
+        redirect: "/inventory",
+        needAdmin: true,
+      },
     ],
   }),
   computed: {
@@ -110,6 +113,15 @@ export default Vue.extend({
     },
     rightNavigatorDrawer() {
       return this.$route.meta.rightDrawer;
+    },
+    avatar() {
+      return users.avatar;
+    },
+    isAdmin() {
+      return users.roles[0] === "admin";
+    },
+    navigateItems() {
+      return this.items.filter((item) => !item.needAdmin || this.isAdmin);
     },
   },
   methods: {

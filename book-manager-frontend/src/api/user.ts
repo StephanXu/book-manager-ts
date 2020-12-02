@@ -14,14 +14,14 @@ export function login(data: { username: string; password: string }) {
     }).then(res => res.data);
 }
 
-interface UserProfile {
-    id: number;
-    alias: string;
-    username: string;
-    avatar: string;
-    birthday: Date;
-    roles: string[];
-    telephone: string;
+export class UserProfile {
+    id = 0;
+    alias = '';
+    username = '';
+    avatar = '';
+    birthday = new Date;
+    roles: string[] = [];
+    telephone = '';
 }
 export function getInfo() {
     return request.request<UserProfile>({
@@ -31,16 +31,9 @@ export function getInfo() {
     }).then(res => res.data);
 }
 
-export function logout() {
-    return request({
-        url: '/user/sign-out',
-        method: 'post'
-    }).then(res => res.data);
-}
-
 export function getUserList() {
-    return request({
-        url: '/user/list',
+    return request.request<UserProfile[]>({
+        url: '/user',
         method: 'get'
     }).then(res => res.data);
 }
@@ -59,9 +52,17 @@ export function updateUser(
     }).then(res => res.data);
 }
 
-export function registerUser(userInfo: { userName: string; password: string; alias: string }) {
+export class RegisterRequest {
+    name = '';
+    username = '';
+    password = '';
+    avatar = '';
+    birthday = new Date;
+    telephone = '';
+}
+export function registerUser(userInfo: RegisterRequest) {
     return request({
-        url: '/user/register',
+        url: '/user',
         method: 'post',
         data: userInfo
     }).then(res => res.data);

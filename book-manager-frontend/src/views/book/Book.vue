@@ -27,66 +27,6 @@
     </v-row>
     <v-card flat outlined>
       <v-data-table :items="books" :headers="bookTableHeaders" item-key="title">
-        <template v-slot:top>
-          <v-toolbar flat>
-            <v-menu
-              top
-              :close-on-content-click="false"
-              :nudge-width="300"
-              offset-y
-              v-model="addBookVisible"
-              transition="slide-y-transition"
-            >
-              <template v-slot:activator="{ on, attrs }">
-                <v-btn color="primary" v-bind="attrs" v-on="on" depressed>
-                  添加新书
-                </v-btn>
-              </template>
-              <v-card>
-                <v-list>
-                  <v-list-item>
-                    <v-list-item-content>
-                      <v-list-item-title>添加新书</v-list-item-title>
-                      <v-list-item-subtitle>
-                        添加新的图书到馆藏
-                      </v-list-item-subtitle>
-                    </v-list-item-content>
-                  </v-list-item>
-                </v-list>
-
-                <v-divider></v-divider>
-
-                <v-card-text>
-                  <v-form>
-                    <v-text-field
-                      label="书名"
-                      v-model="newBookInfo.title"
-                      outlined
-                      dense
-                    >
-                      <template v-slot:append-outer>
-                        <v-btn depressed style="margin-top: -5px"
-                          >匹配书名</v-btn
-                        >
-                      </template>
-                    </v-text-field>
-                    <v-text-field
-                      label="作者"
-                      v-model="newBookInfo.author[0]"
-                      outlined
-                      dense
-                    ></v-text-field>
-                  </v-form>
-                </v-card-text>
-
-                <v-card-actions>
-                  <v-spacer></v-spacer>
-                  <v-btn color="primary" text @click="addNewBook">添加</v-btn>
-                </v-card-actions>
-              </v-card>
-            </v-menu>
-          </v-toolbar>
-        </template>
         <template v-slot:item.author="{ item }">
           <v-chip v-for="author in item.author" :key="author.id" small>
             {{ author.name }}
@@ -98,12 +38,13 @@
           </v-chip>
         </template>
         <template v-slot:item.operation="{ item }">
-          <v-btn small text @click="borrowBook(item.id)" :disabled="item.reader"
-            ><v-icon left>mdi-cube-send</v-icon>借书</v-btn
-          >
-          <v-btn small text @click="deleteBook(item.id)" :disabled="item.reader">
-            <v-icon left>mdi-delete</v-icon>删除</v-btn
-          >
+          <v-btn
+            small
+            text
+            @click="borrowBook(item.id)"
+            :disabled="books.length > 0 && item.reader"
+            ><v-icon left>mdi-cube-send</v-icon>借书
+          </v-btn>
         </template>
       </v-data-table>
     </v-card>
@@ -119,12 +60,11 @@ import {
   Book,
   borrowBook,
   listBooks,
-  removeBook,
 } from "@/api/library";
 import { Component, Vue } from "vue-property-decorator";
 
 @Component
-export default class InventoryBook extends Vue {
+export default class BookList extends Vue {
   public get libraryList() {
     return library.library;
   }
@@ -143,7 +83,7 @@ export default class InventoryBook extends Vue {
     this.newBookInfo.author = [""];
     await library.fetchLibraryList();
     if (this.libraryList.length > 0) {
-      this.refreshBooks(this.libraryList[0].id);
+      await this.refreshBooks(this.libraryList[0].id);
     }
   }
 
@@ -161,11 +101,6 @@ export default class InventoryBook extends Vue {
 
   public async borrowBook(bookId: number) {
     await borrowBook(bookId, users.id);
-    this.books = await listBooks(this.libraryId);
-  }
-
-  public async deleteBook(bookId: number) {
-    await removeBook(bookId);
     this.books = await listBooks(this.libraryId);
   }
 }

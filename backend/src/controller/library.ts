@@ -55,7 +55,7 @@ router.route('/:library/book')
         }
         let books = await Book.find({
             where: { library: library },
-            relations: ['author', 'reader']
+            relations: ['author', 'reader', 'borrowRecord', 'borrowRecord.reader']
         });
         response.json(books);
     })

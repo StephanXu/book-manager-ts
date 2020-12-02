@@ -37,6 +37,7 @@ export interface Book {
     author: Author[];
     library: Library;
     cover: string;
+    borrowRecord: BorrowRecord[];
 }
 export function listBooks(libraryId: number) {
     return request.request<Book[]>({
@@ -49,7 +50,7 @@ export function listBooks(libraryId: number) {
 export interface BorrowRecord {
     id: number;
     book: Book;
-    reader: string;
+    reader: { name: string };
     direction: boolean; // true for borrowi
     time: Date;
 }

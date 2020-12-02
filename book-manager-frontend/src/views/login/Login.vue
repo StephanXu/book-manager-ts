@@ -11,7 +11,7 @@
           <v-card-title class="mt-5">
             <div class="flex">
               <h3 class="text-center">欢迎回来</h3>
-              <p class="text-center subtitle-1">超级无聊的图书管理系统</p>
+              <p class="text-center subtitle-1">登陆以借阅书籍</p>
             </div>
           </v-card-title>
           <v-card-text>

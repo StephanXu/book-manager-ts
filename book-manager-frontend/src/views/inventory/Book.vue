@@ -7,7 +7,7 @@
             <v-list-item>
               <v-list-item-content>
                 <v-list-item-title>图书馆</v-list-item-title>
-                <v-list-item-subtitle> 编辑图书馆数据源 </v-list-item-subtitle>
+                <v-list-item-subtitle> 选择图书馆数据源 </v-list-item-subtitle>
               </v-list-item-content>
             </v-list-item>
           </v-list>
@@ -26,7 +26,11 @@
       </v-col>
     </v-row>
     <v-card flat outlined>
-      <v-data-table :items="books" :headers="bookTableHeaders" item-key="title">
+      <v-data-table
+        :items="bookList"
+        :headers="bookTableHeaders"
+        item-key="title"
+      >
         <template v-slot:top>
           <v-toolbar flat>
             <v-menu
@@ -39,7 +43,7 @@
             >
               <template v-slot:activator="{ on, attrs }">
                 <v-btn color="primary" v-bind="attrs" v-on="on" depressed>
-                  添加新书
+                  <v-icon left>mdi-plus</v-icon>添加新书
                 </v-btn>
               </template>
               <v-card>
@@ -64,11 +68,6 @@
                       outlined
                       dense
                     >
-                      <template v-slot:append-outer>
-                        <v-btn depressed style="margin-top: -5px"
-                          >匹配书名</v-btn
-                        >
-                      </template>
                     </v-text-field>
                     <v-text-field
                       label="作者"
@@ -97,9 +96,48 @@
             {{ item.reader ? "不可借" : "可借" }}
           </v-chip>
         </template>
-        <template v-slot:item.operation="{}">
-          <v-btn small text><v-icon left>mdi-cube-send</v-icon>借书</v-btn>
-          <v-btn small text> <v-icon left>mdi-delete</v-icon>删除</v-btn>
+        <template v-slot:item.reader="{ item }">
+          <strong v-if="item.reader" v-html="item.reader.name"></strong>
+          <span class="grey--text" v-else>未借出</span>
+        </template>
+        <template v-slot:item.operation="{ item }">
+          <v-btn
+            small
+            text
+            @click="deleteBook(item.id)"
+            :disabled="item.reader != null"
+            color="error"
+          >
+            <v-icon left>mdi-delete</v-icon>删除
+          </v-btn>
+          <v-dialog v-model="bookRecordVisible" scrollable max-width="500px">
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn color="primary" small text v-bind="attrs" v-on="on">
+                <v-icon left>mdi-clipboard-edit-outline</v-icon>记录
+              </v-btn>
+            </template>
+            <v-card>
+              <v-card-title>{{ item.title }} 借阅记录</v-card-title>
+              <v-divider></v-divider>
+              <v-data-table
+                :items="item.borrowRecord"
+                :headers="bookRecordHeaders"
+                item-key="id"
+              >
+              </v-data-table>
+              <v-divider></v-divider>
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn
+                  color="blue darken-1"
+                  text
+                  @click="bookRecordVisible = false"
+                >
+                  关闭
+                </v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
         </template>
       </v-data-table>
     </v-card>
@@ -108,37 +146,71 @@
 
 <script lang="ts">
 import library from "@/store/modules/library";
-import { addBook, AddBookReq, Book, listBooks } from "@/api/library";
+import {
+  addBook,
+  AddBookReq,
+  Book,
+  listBooks,
+  removeBook,
+} from "@/api/library";
 import { Component, Vue } from "vue-property-decorator";
 
 @Component
 export default class InventoryBook extends Vue {
-  public get libraryList() {
-    return library.library;
-  }
-
   private books: Book[] = [];
   private libraryId = 0;
   private addBookVisible = false;
+  private bookRecordVisible = false;
   private newBookInfo = new AddBookReq();
   private bookTableHeaders = [
     { text: "书名", value: "title" },
     { text: "作者", value: "author" },
     { text: "状态", value: "status" },
+    { text: "借书人", value: "reader" },
     { text: "操作", value: "operation" },
   ];
+  private bookRecordHeaders = [
+    { text: "时间", value: "time" },
+    { text: "操作", value: "direction" },
+    { text: "读者", value: "reader" },
+  ];
+
+  public get libraryList() {
+    return library.library;
+  }
+
+  public get bookList() {
+    return this.books.map((book) => {
+      console.log(this.books);
+      return {
+        ...book,
+        borrowRecord: book.borrowRecord
+          .sort(
+            (a, b) => new Date(b.time).getTime() - new Date(a.time).getTime()
+          )
+          .map((rec) => {
+            return {
+              ...rec,
+              time: new Date(rec.time).toLocaleString(),
+              reader: rec.reader.name,
+              direction: rec.direction ? "借出" : "还书",
+            };
+          }),
+      };
+    });
+  }
+
   public async created() {
     this.newBookInfo.author = [""];
     await library.fetchLibraryList();
     if (this.libraryList.length > 0) {
-      this.refreshBooks(this.libraryList[0].id);
+      await this.refreshBooks(this.libraryList[0].id);
     }
   }
 
   public async refreshBooks(libraryId: number) {
     this.libraryId = libraryId;
     this.books = await listBooks(libraryId);
-    console.log(this.books);
   }
 
   public async addNewBook() {
@@ -146,6 +218,11 @@ export default class InventoryBook extends Vue {
     await addBook(this.libraryId, this.newBookInfo);
     this.books = await listBooks(this.libraryId);
     this.addBookVisible = false;
+  }
+
+  public async deleteBook(bookId: number) {
+    await removeBook(bookId);
+    this.books = await listBooks(this.libraryId);
   }
 }
 </script>

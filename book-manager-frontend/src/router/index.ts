@@ -62,33 +62,29 @@ const routes = [
         path: '/inventory',
         name: 'inventory',
         component: Layout,
-        redirect: '/inventory/index',
+        redirect: '/inventory/book',
         children: [
-            {
-                path: 'index',
-                name: 'inventory',
-                component: () => import('@/views/inventory/Inventory.vue'),
-                meta: {
-                    drawer: () => import('@/views/inventory/Navigator.vue'),
-                    title: '库存概览'
-                }
-            },
-            {
-                path: 'library',
-                name: 'inventory-library',
-                component: () => import('@/views/inventory/Library.vue'),
-                meta: {
-                    drawer: () => import('@/views/inventory/Navigator.vue'),
-                    title: '图书馆管理'
-                }
-            },
             {
                 path: 'book',
                 name: 'inventory-book',
                 component: () => import('@/views/inventory/Book.vue'),
                 meta: {
-                    drawer: () => import('@/views/inventory/Navigator.vue'),
-                    title: '书籍管理'
+                    title: '书库管理'
+                }
+            }]
+    },
+    {
+        path: '/reader',
+        name: 'reader',
+        component: Layout,
+        redirect: '/reader/index',
+        children: [
+            {
+                path: 'index',
+                name: 'inventory-users',
+                component: () => import('@/views/inventory/UserManage.vue'),
+                meta: {
+                    title: '用户管理'
                 }
             }]
     },
@@ -103,7 +99,7 @@ const routes = [
 ]
 
 const router = new VueRouter({
-    // mode: 'history',
+    mode: 'history',
     routes
 })
 
@@ -112,7 +108,7 @@ router.beforeEach(async (to, from, next) => {
     // determine whether the user has logged in
     const hasToken = getToken()
 
-    document.title = `${to.meta.title} - Ossian Board`
+    document.title = `${to.meta.title} - Borok Library`
 
     if (hasToken) {
         if (to.path === '/login') {
