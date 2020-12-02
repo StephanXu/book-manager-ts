@@ -4,13 +4,8 @@ import { Book } from '../entity/books';
 import { BorrowRecord } from '../entity/borrowRecord';
 import { User } from '../entity/user';
 import { IUserRequest } from '../types/request';
-const router = Router({ mergeParams: true })
 
-class BookReq {
-    title: string;
-    author: string[];
-    library: string;
-};
+const router = Router({ mergeParams: true })
 
 async function removeBook(req: Request, res: Response) {
     let book = await Book.findOne({ where: { id: req.params.bookId } });
@@ -18,6 +13,7 @@ async function removeBook(req: Request, res: Response) {
         res.status(404).json({ msg: "book dose not exist" });
     }
     await book?.remove();
+    res.status(200).send();
 }
 
 async function borrowBook(req: Request, res: Response) {

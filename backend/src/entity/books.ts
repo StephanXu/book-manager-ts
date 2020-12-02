@@ -6,7 +6,6 @@ import {
     OneToMany,
     ManyToOne,
     ManyToMany,
-    OneToOne,
 } from 'typeorm'
 import { Author } from './author';
 import { BorrowRecord } from './borrowRecord';

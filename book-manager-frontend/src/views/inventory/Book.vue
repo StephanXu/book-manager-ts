@@ -181,7 +181,6 @@ export default class InventoryBook extends Vue {
 
   public get bookList() {
     return this.books.map((book) => {
-      console.log(this.books);
       return {
         ...book,
         borrowRecord: book.borrowRecord

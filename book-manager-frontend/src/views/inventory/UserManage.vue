@@ -1,5 +1,5 @@
 <template>
-  <v-container fluid class="mx-auto" style="max-width: 960px">
+  <v-container fluid class="mx-auto" style="max-width: 1140px">
     <v-card flat outlined>
       <v-data-table
         :items="mappedUserList"
