@@ -110,7 +110,7 @@
           >
             <v-icon left>mdi-delete</v-icon>删除
           </v-btn>
-          <v-dialog v-model="bookRecordVisible" scrollable max-width="500px">
+          <v-dialog v-model="item.bookRecordVisible" scrollable max-width="500px">
             <template v-slot:activator="{ on, attrs }">
               <v-btn color="primary" small text v-bind="attrs" v-on="on">
                 <v-icon left>mdi-clipboard-edit-outline</v-icon>记录
@@ -131,7 +131,7 @@
                 <v-btn
                   color="blue darken-1"
                   text
-                  @click="bookRecordVisible = false"
+                  @click="item.bookRecordVisible = false"
                 >
                   关闭
                 </v-btn>
@@ -193,6 +193,7 @@ export default class InventoryBook extends Vue {
               time: new Date(rec.time).toLocaleString(),
               reader: rec.reader.name,
               direction: rec.direction ? "借出" : "还书",
+              bookRecordVisible: false,
             };
           }),
       };

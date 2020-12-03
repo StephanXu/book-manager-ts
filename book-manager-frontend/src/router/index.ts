@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import { getToken } from '@/utils/auth' // get token from cookie
+import { getToken } from '@/utils/auth'
 import Layout from '@/views/layout/Layout.vue'
 import store from '@/store'
 

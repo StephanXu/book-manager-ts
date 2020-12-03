@@ -51,7 +51,7 @@ export interface BorrowRecord {
     id: number;
     book: Book;
     reader: { name: string };
-    direction: boolean; // true for borrowi
+    direction: boolean; // true for borrow
     time: Date;
 }
 export function listBorrowRecord(bookId: number) {
