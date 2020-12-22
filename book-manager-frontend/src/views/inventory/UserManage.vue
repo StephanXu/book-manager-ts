@@ -65,7 +65,7 @@
                         small
                         dark
                         color="primary"
-                        @change="confirmAddUser"
+                        @click="confirmAddUser"
                       >
                         <v-icon dark>mdi-plus</v-icon>
                       </v-btn>
@@ -151,8 +151,13 @@
           </v-toolbar>
         </template>
         <template v-slot:item.avatar="{ item }">
-          <v-avatar size="36px">
-            <img :src="item.avatar" :alt="item.alias" />
+          <v-avatar size="36px" color="grey">
+            <img
+              v-if="item.avatar.length"
+              :src="item.avatar"
+              :alt="item.alias"
+            />
+            <v-icon dark v-else> mdi-account-circle </v-icon>
           </v-avatar>
         </template>
         <template v-slot:item.roles="{ item }">
