@@ -92,3 +92,11 @@ export function changeUserRole(userId: number, roles: string[]) {
         }
     }).then(res => res.data);
 }
+
+export function removeUser(userId: number) {
+    return request({
+        url: `/user/${userId}`,
+        method: 'delete'
+    }).then(res => res.data);
+
+}

@@ -147,6 +147,19 @@ async function changeUserRoles(req: IUserRequest, res: Response) {
     res.status(200).send();
 }
 
+async function removeUser(req: IUserRequest, res: Response) {
+    let user = await User.findOne({
+        where: { id: req.params.userId }
+    });
+    if (!user) {
+        res.status(404).json({ msg: "User dose not exist" });
+        return;
+    }
+    user.remove();
+    user.save();
+    res.status(200).send();
+}
+
 router.route('/')
     .get(listUsers)
     .post(registerUser);
@@ -162,5 +175,8 @@ router.route('/book')
 
 router.route('/:userId/roles')
     .put(changeUserRoles);
+
+router.route('/:userId')
+    .delete(removeUser);
 
 export default router;

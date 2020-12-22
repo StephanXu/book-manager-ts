@@ -125,7 +125,13 @@
           </v-chip>
         </template>
         <template v-slot:item.operation="{ item }">
-          <v-btn small text color="error" :disabled="item.roles[0] === 'admin'">
+          <v-btn
+            small
+            text
+            color="error"
+            :disabled="item.roles[0] === 'admin'"
+            @click="deleteUser(item.id)"
+          >
             <v-icon left>mdi-delete</v-icon>删除
           </v-btn>
         </template>
@@ -142,6 +148,7 @@ import {
   getUserList,
   RegisterRequest,
   registerUser,
+  removeUser,
   UserProfile,
 } from "@/api/user";
 import users from "@/store/modules/user";
@@ -192,6 +199,11 @@ export default class InventoryLibrary extends Vue {
 
   public async changeUserRole(userId: number, curtRole: string) {
     await changeUserRole(userId, [curtRole === "admin" ? "member" : "admin"]);
+    this.userList = await getUserList();
+  }
+
+  public async deleteUser(userId: number) {
+    await removeUser(userId);
     this.userList = await getUserList();
   }
 }
