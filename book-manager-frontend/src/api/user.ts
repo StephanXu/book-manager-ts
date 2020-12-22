@@ -75,3 +75,20 @@ export function changePassword(changePasswordRequest: { oldPassword: string; new
         data: changePasswordRequest
     }).then(res => res.data);
 }
+
+export function fetchRandomUser() {
+    return request({
+        url: 'https://randomuser.me/api/',
+        method: 'get'
+    }).then(res => res.data);
+}
+
+export function changeUserRole(userId: number, roles: string[]) {
+    return request({
+        url: `/user/${userId}/roles`,
+        method: 'put',
+        data: {
+            roles
+        }
+    }).then(res => res.data);
+}

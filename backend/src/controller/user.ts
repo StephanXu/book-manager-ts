@@ -33,6 +33,10 @@ interface UserProfile {
     telephone: string;
 }
 
+interface ChangeUserRoleRequest {
+    roles: string[];
+}
+
 async function listUsers(req: Request, res: Response) {
     let users = await User.find({
         order: {
@@ -70,7 +74,7 @@ async function login(req: Request, res: Response) {
         res.status(404).json({ msg: "user dose not exist" });
         return;
     }
-    if (bcrypt.compare(loginInfo.password, user.password)) {
+    if (await bcrypt.compare(loginInfo.password, user.password)) {
         const token = jwt.sign(
             {
                 uid: user.id,
@@ -125,6 +129,23 @@ async function listBorrowedBook(req: IUserRequest, res: Response) {
     res.status(200).json(books);
 }
 
+async function changeUserRoles(req: IUserRequest, res: Response) {
+    let user = await User.findOne({
+        where: { id: req.params.userId }
+    });
+    if (!user) {
+        res.status(404).json({ msg: 'User dose not found' });
+        return;
+    }
+    let userRoleRequest: ChangeUserRoleRequest = req.body;
+    if (userRoleRequest.roles.length < 1) {
+        res.status(400).json({ msg: 'Bad params' })
+        return;
+    }
+    user.role = userRoleRequest.roles[0];
+    user.save();
+    res.status(200).send();
+}
 
 router.route('/')
     .get(listUsers)
@@ -138,5 +159,8 @@ router.route('/profile')
 
 router.route('/book')
     .get(listBorrowedBook);
+
+router.route('/:userId/roles')
+    .put(changeUserRoles);
 
 export default router;

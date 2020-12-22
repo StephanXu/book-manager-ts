@@ -1,11 +1,11 @@
 {
    "type": "postgres",
-   "host": "192.168.31.224",
+   "host": "localhost",
    "port": 5432,
    "username": "postgres",
    "password": "postgres",
    "database": "book_manager",
-   "synchronize": true,
+   "synchronize": false,
    "logging": true,
    "entities": [
       "src/entity/**/*.ts"

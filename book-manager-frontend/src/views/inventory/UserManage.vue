@@ -38,6 +38,14 @@
                 <v-card-text>
                   <v-form>
                     <v-text-field
+                      label="姓名"
+                      v-model="newUser.name"
+                      outlined
+                      dense
+                      prepend-icon="mdi-rename-box"
+                    >
+                    </v-text-field>
+                    <v-text-field
                       label="邮箱"
                       v-model="newUser.username"
                       outlined
@@ -60,7 +68,18 @@
                       outlined
                       dense
                       prepend-icon="mdi-face-recognition"
-                    ></v-text-field>
+                    >
+                      <template v-slot:append-outer>
+                        <v-btn
+                          class="mt-n2"
+                          text
+                          color="primary"
+                          @click="generateRandomAvatar"
+                        >
+                          获取头像
+                        </v-btn>
+                      </template>
+                    </v-text-field>
                     <v-text-field
                       label="生日"
                       v-model="newUser.birthday"
@@ -94,7 +113,14 @@
           </v-avatar>
         </template>
         <template v-slot:item.roles="{ item }">
-          <v-chip v-for="(role, index) in item.roles" :key="index" small>
+          <v-chip
+            v-for="(role, index) in item.roles"
+            :key="index"
+            small
+            :disabled="curtUserId == item.id"
+            @click="changeUserRole(item.id, role)"
+            :color="role === 'admin' ? 'warning' : 'default'"
+          >
             {{ role === "admin" ? "管理员" : "读者" }}
           </v-chip>
         </template>
@@ -111,11 +137,14 @@
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
 import {
+  changeUserRole,
+  fetchRandomUser,
   getUserList,
   RegisterRequest,
   registerUser,
   UserProfile,
 } from "@/api/user";
+import users from "@/store/modules/user";
 
 @Component
 export default class InventoryLibrary extends Vue {
@@ -142,6 +171,10 @@ export default class InventoryLibrary extends Vue {
     });
   }
 
+  get curtUserId() {
+    return users.id;
+  }
+
   public async created() {
     this.userList = await getUserList();
   }
@@ -150,6 +183,16 @@ export default class InventoryLibrary extends Vue {
     await registerUser(this.newUser);
     this.userList = await getUserList();
     this.addUserVisible = false;
+  }
+
+  public async generateRandomAvatar() {
+    const randomUser = (await fetchRandomUser()).results[0];
+    this.newUser.avatar = randomUser.picture.large;
+  }
+
+  public async changeUserRole(userId: number, curtRole: string) {
+    await changeUserRole(userId, [curtRole === "admin" ? "member" : "admin"]);
+    this.userList = await getUserList();
   }
 }
 </script>
