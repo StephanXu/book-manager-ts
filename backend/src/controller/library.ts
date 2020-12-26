@@ -35,7 +35,18 @@ async function addLibrary(request: Request, response: Response) {
 async function removeLibrary(req: Request, res: Response) {
     let id = req.params.library;
 
-    let library = await Library.findOne({ where: { id: id } });
+    let library = await Library.findOne({
+        where: { id: id },
+        relations: ['book']
+    });
+    if (!library) {
+        res.status(404).json({ msg: "Library dose not exist" });
+        return;
+    }
+    if (library.book.length) {
+        res.status(400).json({ msg: "Library still have books" });
+        return;
+    }
     await library?.remove();
     res.status(200).send();
 }
@@ -92,7 +103,6 @@ async function addBook(request: Request, response: Response) {
         });
         await transactionalEntityManager.save(newBook);
     });
-    await newBook.save();
     response.status(200).send();
 }
 

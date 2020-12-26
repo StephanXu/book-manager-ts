@@ -5,6 +5,7 @@ import { Book } from '../entity/books'
 
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcrypt'
+import { getManager } from 'typeorm'
 
 const saltRounds = 10;
 const router = Router();
@@ -149,14 +150,23 @@ async function changeUserRoles(req: IUserRequest, res: Response) {
 
 async function removeUser(req: IUserRequest, res: Response) {
     let user = await User.findOne({
-        where: { id: req.params.userId }
+        where: { id: req.params.userId },
+        relations: ['book', 'borrowRecord']
     });
     if (!user) {
         res.status(404).json({ msg: "User dose not exist" });
         return;
     }
-    user.remove();
-    user.save();
+    if (user.book.length) {
+        res.status(400).json({ msg: "User did not return all books" });
+        return;
+    }
+    await getManager().transaction(async transactionalEntityManager => {
+        user?.borrowRecord.forEach(async (item) => {
+            await transactionalEntityManager.remove(item);
+        });
+        await transactionalEntityManager.remove(user);
+    });
     res.status(200).send();
 }
 

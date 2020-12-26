@@ -191,7 +191,7 @@ export default class InventoryBook extends Vue {
             return {
               ...rec,
               time: new Date(rec.time).toLocaleString(),
-              reader: rec.reader.name,
+              reader: rec.reader ? rec.reader.name : null,
               direction: rec.direction ? "借出" : "还书",
               bookRecordVisible: false,
             };

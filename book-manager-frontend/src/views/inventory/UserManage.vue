@@ -260,7 +260,11 @@ export default class InventoryLibrary extends Vue {
   }
 
   public async deleteUser(userId: number) {
-    await removeUser(userId);
+    try {
+      await removeUser(userId);
+    } catch (err) {
+      // TODO: Need to display message box
+    }
     this.userList = await getUserList();
   }
 

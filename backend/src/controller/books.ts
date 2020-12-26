@@ -8,11 +8,25 @@ import { IUserRequest } from '../types/request';
 const router = Router({ mergeParams: true })
 
 async function removeBook(req: Request, res: Response) {
-    let book = await Book.findOne({ where: { id: req.params.bookId } });
+    let book = await Book.findOne(
+        {
+            where: { id: req.params.bookId },
+            relations: ['borrowRecord']
+        });
     if (!book) {
         res.status(404).json({ msg: "book dose not exist" });
+        return;
     }
-    await book?.remove();
+    if (book.reader) {
+        res.status(400).json({ msg: "Book did not been returned yet" })
+        return;
+    }
+    await getManager().transaction(async transactionalEntityManager => {
+        book?.borrowRecord.forEach(async (item) => {
+            await transactionalEntityManager.remove(item);
+        });
+        await transactionalEntityManager.remove(book);
+    });
     res.status(200).send();
 }
 
