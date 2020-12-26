@@ -33,8 +33,9 @@
       <v-btn icon @click="logout">
         <v-icon>mdi-logout</v-icon>
       </v-btn>
-      <v-avatar size="36px" style="margin-left: 10px">
-        <img :src="avatar" />
+      <v-avatar color="indigo" size="36px" style="margin-left: 10px">
+        <img v-if="avatar.length" :src="avatar" />
+        <v-icon dark v-else> mdi-account-circle </v-icon>
       </v-avatar>
     </v-app-bar>
 
